@@ -1712,7 +1712,7 @@ let carouselPos = 0;
 
 function getCardWidth() {
   const card = track.querySelector('.carousel-card');
-  return card.offsetWidth + 20; // gap
+  return card.offsetWidth + 20;
 }
 
 function getMaxScroll() {
@@ -1804,68 +1804,18 @@ window.addEventListener('resize', () => {
   carouselPos = Math.min(carouselPos, getMaxScroll());
   updateCarousel();
 });
-</script>
 
-  <script>
-document.addEventListener('DOMContentLoaded', function() {
-  
-  // === МОДАЛЬНОЕ ОКНО ===
-  const modal = document.getElementById('consentModal');
-  const openModalBtn = document.getElementById('openConsentModal');
-  const closeModalBtn = document.querySelector('.modal-close');
-  
-  // Открытие модалки по ссылке
-  openModalBtn.addEventListener('click', function(e) {
-    e.preventDefault();
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  });
-  
-  // Закрытие по крестику
-  closeModalBtn.addEventListener('click', function() {
-    modal.classList.remove('active');
-    document.body.style.overflow = '';
-  });
-  
-  // Закрытие по клику на фон
-  modal.addEventListener('click', function(e) {
-    if (e.target === modal) {
-      modal.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  });
-  
-  // Закрытие по Escape
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && modal.classList.contains('active')) {
-      modal.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  });
-  
-  // === ВАЛИДАЦИЯ ФОРМЫ ===
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  
-  // Находим элементы
-  const checkbox = document.getElementById('consentCheckbox');
-  const form = document.getElementById('heroForm');
-  const submitBtn = document.querySelector('.btn-cta');
-  const consentError = document.getElementById('consentError');
-  
-  // === ПРОВЕРКА: все ли элементы найдены? ===
-  console.log('Чекбокс найден:', checkbox);
-  console.log('Кнопка найдена:', submitBtn);
-  console.log('Форма найдена:', form);
-  console.log('Ошибка найдена:', consentError);
-  
-  // Если чего-то нет — выходим
-  if (!checkbox || !submitBtn || !form) {
-    console.error('❌ Один из элементов не найден! Проверьте ID и классы.');
-    return;
-  }
-  
-  // === ФУНКЦИЯ: блокировка/разблокировка кнопки ===
+// ==========================================
+// === ДОБАВЛЯЕМ КОД ДЛЯ ЧЕКБОКСА СЮДА ===
+// ==========================================
+
+// === ЧЕКБОКС СОГЛАСИЯ ===
+const checkbox = document.getElementById('consentCheckbox');
+const form = document.getElementById('heroForm');
+const submitBtn = document.querySelector('.btn-cta');
+const consentError = document.getElementById('consentError');
+
+if (checkbox && submitBtn && form) {
   function updateButton() {
     if (checkbox.checked) {
       submitBtn.disabled = false;
@@ -1879,38 +1829,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
-  // === ЗАПУСКАЕМ ПРИ ЗАГРУЗКЕ ===
   updateButton();
   
-  // === ПРИ ИЗМЕНЕНИИ ЧЕКБОКСА ===
   checkbox.addEventListener('change', function() {
     updateButton();
   });
   
-  // === ПРИ ОТПРАВКЕ ФОРМЫ ===
+  // Дополняем существующий обработчик формы
+  const originalSubmit = form.submit;
   form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
     if (!checkbox.checked) {
+      e.preventDefault();
       if (consentError) {
         consentError.style.display = 'block';
       }
       checkbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
-    
-    alert('✅ Форма отправлена!');
-    // form.submit();
   });
   
-  // === ПРИ КЛИКЕ НА ЧЕКБОКС УБИРАЕМ ОШИБКУ ===
   checkbox.addEventListener('click', function() {
     if (checkbox.checked) {
       if (consentError) consentError.style.display = 'none';
     }
   });
-  
-});
+}
 </script>
   
 </body>
