@@ -1844,63 +1844,80 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
   // === ВАЛИДАЦИЯ ФОРМЫ ===
-  const form = document.getElementById('heroForm');
-  const checkbox = document.getElementById('consentCheckbox');
-  const submitBtn = document.getElementById('submitBtn');
-  const consentError = document.getElementById('consentError');
-  const checkboxGroup = checkbox.closest('.checkbox-group');
-  
-  // Отключаем кнопку отправки, если чекбокс не отмечен
-  function toggleSubmitButton() {
-    if (!checkbox.checked) {
-      submitBtn.disabled = true;
-      submitBtn.style.opacity = '0.6';
-      submitBtn.style.cursor = 'not-allowed';
+// === ВАЛИДАЦИЯ ФОРМЫ ===
+const form = document.getElementById('heroForm');
+const checkbox = document.getElementById('consentCheckbox');
+const submitBtn = document.querySelector('.btn-cta'); // ← ИЗМЕНЕНО: ищем по классу
+const consentError = document.getElementById('consentError');
+const checkboxGroup = checkbox.closest('.form-group'); // ← ИЗМЕНЕНО: ищем родителя
+
+// Отключаем кнопку отправки, если чекбокс не отмечен
+function toggleSubmitButton() {
+  if (!checkbox.checked) {
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = '0.6';
+    submitBtn.style.cursor = 'not-allowed';
+    if (checkboxGroup) {
       checkboxGroup.classList.remove('error');
+    }
+    if (consentError) {
       consentError.style.display = 'none';
-    } else {
-      submitBtn.disabled = false;
-      submitBtn.style.opacity = '1';
-      submitBtn.style.cursor = 'pointer';
+    }
+  } else {
+    submitBtn.disabled = false;
+    submitBtn.style.opacity = '1';
+    submitBtn.style.cursor = 'pointer';
+    if (checkboxGroup) {
       checkboxGroup.classList.remove('error');
+    }
+    if (consentError) {
       consentError.style.display = 'none';
     }
   }
-  
-  // Проверяем при загрузке
+}
+
+// Проверяем при загрузке
+toggleSubmitButton();
+
+// Проверяем при изменении чекбокса
+checkbox.addEventListener('change', function() {
   toggleSubmitButton();
+});
+
+// Валидация при отправке
+form.addEventListener('submit', function(e) {
+  e.preventDefault();
   
-  // Проверяем при изменении чекбокса
-  checkbox.addEventListener('change', function() {
-    toggleSubmitButton();
-  });
-  
-  // Валидация при отправке
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Проверяем чекбокс
-    if (!checkbox.checked) {
+  // Проверяем чекбокс
+  if (!checkbox.checked) {
+    if (checkboxGroup) {
       checkboxGroup.classList.add('error');
-      consentError.style.display = 'block';
-      // Прокручиваем к чекбоксу
-      checkboxGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
     }
-    
-    // Если всё заполнено и чекбокс отмечен
-    alert('✅ Форма отправлена! (здесь будет реальная отправка)');
-    // form.submit(); // раскомментировать, когда будет бэкенд
-  });
+    if (consentError) {
+      consentError.style.display = 'block';
+    }
+    // Прокручиваем к чекбоксу
+    if (checkboxGroup) {
+      checkboxGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return;
+  }
   
-  // При клике на чекбокс убираем ошибку
-  checkbox.addEventListener('click', function() {
-    if (checkbox.checked) {
+  // Если всё заполнено и чекбокс отмечен
+  alert('✅ Форма отправлена! (здесь будет реальная отправка)');
+  // form.submit(); // раскомментировать, когда будет бэкенд
+});
+
+// При клике на чекбокс убираем ошибку
+checkbox.addEventListener('click', function() {
+  if (checkbox.checked) {
+    if (checkboxGroup) {
       checkboxGroup.classList.remove('error');
+    }
+    if (consentError) {
       consentError.style.display = 'none';
     }
-  });
-  
+  }
 });
 </script>
   
