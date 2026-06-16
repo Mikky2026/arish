@@ -1704,24 +1704,29 @@ document.getElementById('heroForm').addEventListener('submit', function(e) {
   if (!valid) return;
   
   // ============================================
-  // === ОТПРАВКА НА EMAIL (FormSubmit) ===
-  // ============================================
-  const emailForm = document.createElement('form');
-  emailForm.action = 'https://formsubmit.co/alfa-alianse@mail.ru'; // ← ЗАМЕНИТЕ
-  emailForm.method = 'POST';
-  emailForm.style.display = 'none';
-  
-  const formData = new FormData(this);
-  for (let [key, value] of formData.entries()) {
-    const input = document.createElement('input');
-    input.name = key;
-    input.value = value;
-    emailForm.appendChild(input);
+// ОТПРАВКА НА EMAIL (FormSubmit) - AJAX
+// ============================================
+const formData = new FormData(this);
+// Добавляем отключение капчи
+formData.append('_captcha', 'false');
+
+fetch('https://formsubmit.co/ajax/alfa-alianse@mail.ru', {
+  method: 'POST',
+  body: formData
+})
+.then(response => {
+  if (response.ok) {
+    console.log('✅ Email: отправлено');
+  } else {
+    console.log('❌ Email: ошибка');
+    // Показываем ошибку пользователю
+    alert('❌ Ошибка отправки. Попробуйте позже.');
   }
-  
-  document.body.appendChild(emailForm);
-  emailForm.submit();
-  document.body.removeChild(emailForm);
+})
+.catch(error => {
+  console.log('❌ Email: ошибка', error);
+  alert('❌ Ошибка отправки. Попробуйте позже.');
+});
   
   // ============================================
   // === ОТПРАВКА В TELEGRAM ===
