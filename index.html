@@ -1898,6 +1898,17 @@ function closeModal(id) {
   document.body.style.overflow = '';
 }
 
+  // === ЗАКРЫТИЕ МОДАЛКИ ПОЛИТИКИ ПО КЛИКУ НА ФОН ===
+const privacyModal = document.getElementById('privacyModal');
+if (privacyModal) {
+    privacyModal.addEventListener('click', function(event) {
+        // Проверяем, что клик был именно по фону (самому оверлею), а не по внутреннему содержимому
+        if (event.target === this) {
+            closeModal('privacyModal');
+        }
+    });
+}
+  
 // Close modal on overlay click
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
   overlay.addEventListener('click', (e) => {
