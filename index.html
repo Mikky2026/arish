@@ -1673,6 +1673,20 @@ phoneMask(footerPhone);
 // === HERO FORM ===
 document.getElementById('heroForm').addEventListener('submit', function(e) {
   e.preventDefault();
+  
+  // Проверяем чекбокс
+  const checkbox = document.getElementById('consentCheckbox');
+  const consentError = document.getElementById('consentError');
+  
+  if (!checkbox.checked) {
+    if (consentError) {
+      consentError.style.display = 'block';
+    }
+    checkbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  
+  // === ВАЛИДАЦИЯ ПОЛЕЙ ===
   let valid = true;
   const fields = this.querySelectorAll('input, select');
   fields.forEach(f => {
@@ -1686,10 +1700,84 @@ document.getElementById('heroForm').addEventListener('submit', function(e) {
       if (err) err.style.display = 'none';
     }
   });
-  if (valid) {
-    openModal('successModal');
-    this.reset();
+  
+  if (!valid) return;
+  
+  // ============================================
+  // === ОТПРАВКА НА EMAIL (FormSubmit) ===
+  // ============================================
+  const emailForm = document.createElement('form');
+  emailForm.action = 'https://formsubmit.co/alfa-alianse@mail.ru'; // ← ЗАМЕНИТЕ
+  emailForm.method = 'POST';
+  emailForm.style.display = 'none';
+  
+  const formData = new FormData(this);
+  for (let [key, value] of formData.entries()) {
+    const input = document.createElement('input');
+    input.name = key;
+    input.value = value;
+    emailForm.appendChild(input);
   }
+  
+  document.body.appendChild(emailForm);
+  emailForm.submit();
+  document.body.removeChild(emailForm);
+  
+  // ============================================
+  // === ОТПРАВКА В TELEGRAM ===
+  // ============================================
+  const token = 8740269183:AAFjJVx47m7a4XyTQ3tulsUEyUo5_2IBy5A; // ← ЗАМЕНИТЕ
+  const chatId = 582065320; // ← ЗАМЕНИТЕ
+  
+  let message = '📋 <b>Новая заявка с сайта!</b>\n\n';
+  
+  const allFields = this.querySelectorAll('input, select, textarea');
+  allFields.forEach(f => {
+    if (f.type === 'checkbox' || f.type === 'submit') return;
+    const label = f.name || f.placeholder || 'Поле';
+    const value = f.value || '—';
+    message += `<b>${label}:</b> ${value}\n`;
+  });
+  
+  message += `\n<b>Согласие на обработку:</b> ${checkbox.checked ? '✅ Да' : '❌ Нет'}`;
+  
+ fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: message,
+      parse_mode: 'HTML'
+    })
+  })
+  .then(response => {
+    if (response.ok) {
+      console.log('✅ Telegram: отправлено');
+    } else {
+      console.log('❌ Telegram: ошибка');
+    }
+  })
+  .catch(error => {
+    console.log('❌ Telegram: ошибка', error);
+  });
+  
+  // ============================================
+  // === УСПЕХ ===
+  // ============================================
+  openModal('successModal');
+  this.reset();
+  
+  // Блокируем кнопку до новой галочки
+  const submitBtn = document.querySelector('.btn-cta');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = '0.5';
+    submitBtn.style.cursor = 'not-allowed';
+  }
+  
+  // Сбрасываем чекбокс
+  checkbox.checked = false;
+  if (consentError) consentError.style.display = 'none';
 });
 
 // === FOOTER CALLBACK ===
