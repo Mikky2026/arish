@@ -1845,82 +1845,25 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // === ВАЛИДАЦИЯ ФОРМЫ ===
 <script>
+// Простейший вариант
 document.addEventListener('DOMContentLoaded', function() {
+  const cb = document.getElementById('consentCheckbox');
+  const btn = document.querySelector('.btn-cta');
   
-  // Находим элементы
-  const checkbox = document.getElementById('consentCheckbox');
-  const form = document.getElementById('heroForm');
-  const submitBtn = document.querySelector('.btn-cta');
-  const consentError = document.getElementById('consentError');
+  // При загрузке — кнопка выключена
+  btn.disabled = true;
+  btn.style.opacity = '0.5';
   
-  // === ПРОВЕРКА: все ли элементы найдены? ===
-  console.log('Чекбокс найден:', checkbox);
-  console.log('Кнопка найдена:', submitBtn);
-  console.log('Форма найдена:', form);
-  console.log('Ошибка найдена:', consentError);
-  
-  // Если чего-то нет — выходим
-  if (!checkbox || !submitBtn || !form) {
-    console.error('❌ Один из элементов не найден! Проверьте ID и классы.');
-    return;
-  }
-  
-  // === ФУНКЦИЯ: блокировка/разблокировка кнопки ===
-  function updateButton() {
-    if (checkbox.checked) {
-      // Чекбокс отмечен → кнопка активна
-      submitBtn.disabled = false;
-      submitBtn.style.opacity = '1';
-      submitBtn.style.cursor = 'pointer';
-      if (consentError) consentError.style.display = 'none';
+  // При клике на чекбокс
+  cb.addEventListener('change', function() {
+    if (this.checked) {
+      btn.disabled = false;
+      btn.style.opacity = '1';
     } else {
-      // Чекбокс не отмечен → кнопка НЕ активна
-      submitBtn.disabled = true;
-      submitBtn.style.opacity = '0.5';
-      submitBtn.style.cursor = 'not-allowed';
-    }
-  }
-  
-  // === ЗАПУСКАЕМ ПРИ ЗАГРУЗКЕ ===
-  updateButton();
-  
-  // === ПРИ ИЗМЕНЕНИИ ЧЕКБОКСА ===
-  checkbox.addEventListener('change', function() {
-    updateButton();
-  });
-  
-  // === ПРИ ОТПРАВКЕ ФОРМЫ ===
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    if (!checkbox.checked) {
-      // Нет галочки → показываем ошибку
-      if (consentError) {
-        consentError.style.display = 'block';
-        consentError.style.color = '#e74c3c';
-        consentError.style.fontSize = '0.8rem';
-        consentError.style.marginTop = '4px';
-      }
-      // Подсвечиваем чекбокс
-      checkbox.style.outline = '2px solid #e74c3c';
-      checkbox.style.outlineOffset = '2px';
-      checkbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-    
-    // Всё ок → отправляем
-    alert('✅ Форма отправлена!');
-    // form.submit(); // раскомментировать для реальной отправки
-  });
-  
-  // === ПРИ КЛИКЕ НА ЧЕКБОКС УБИРАЕМ ОШИБКУ ===
-  checkbox.addEventListener('click', function() {
-    if (checkbox.checked) {
-      if (consentError) consentError.style.display = 'none';
-      checkbox.style.outline = 'none';
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
     }
   });
-  
 });
 </script>
   
