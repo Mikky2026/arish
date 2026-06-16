@@ -1728,43 +1728,51 @@ fetch('https://formsubmit.co/ajax/alfa-alianse@mail.ru', {
   alert('❌ Ошибка отправки. Попробуйте позже.');
 });
   
-  // ============================================
-  // === ОТПРАВКА В TELEGRAM ===
-  // ============================================
-  const token = '8740269183:AAFjJVx47m7a4XyTQ3tulsUEyUo5_2IBy5A'; // ← ЗАМЕНИТЕ
-  const chatId = '582065320'; // ← ЗАМЕНИТЕ
+ // ============================================
+// ОТПРАВКА В TELEGRAM (улучшенная)
+// ============================================
+const token = '8740269183:AAFjJVx47m7a4XyTQ3tulsUEyUo5_2IBy5A';
+const chatId = 'ВАШ_CHAT_ID'; // ← ЗАМЕНИТЕ
+
+let message = '📋 <b>Новая заявка с сайта!</b>\n\n';
+
+// Собираем данные из полей
+const allFields = this.querySelectorAll('input, select, textarea');
+allFields.forEach(f => {
+  // Пропускаем чекбокс (он будет отдельно) и кнопку
+  if (f.type === 'checkbox' || f.type === 'submit') return;
   
-  let message = '📋 <b>Новая заявка с сайта!</b>\n\n';
+  // Берём name, если нет — placeholder, если нет — "Поле"
+  const label = f.name || f.placeholder || 'Поле';
+  const value = f.value || '—';
   
-  const allFields = this.querySelectorAll('input, select, textarea');
-  allFields.forEach(f => {
-    if (f.type === 'checkbox' || f.type === 'submit') return;
-    const label = f.name || f.placeholder || 'Поле';
-    const value = f.value || '—';
-    message += `<b>${label}:</b> ${value}\n`;
-  });
-  
-  message += `\n<b>Согласие на обработку:</b> ${checkbox.checked ? '✅ Да' : '❌ Нет'}`;
-  
- fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text: message,
-      parse_mode: 'HTML'
-    })
+  // Форматируем красиво
+  message += `<b>${label}:</b> ${value}\n`;
+});
+
+// Добавляем согласие
+message += `\n<b>Согласие на обработку:</b> ${checkbox.checked ? '✅ Да' : '❌ Нет'}`;
+
+// Отправляем
+fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    chat_id: chatId,
+    text: message,
+    parse_mode: 'HTML'
   })
-  .then(response => {
-    if (response.ok) {
-      console.log('✅ Telegram: отправлено');
-    } else {
-      console.log('❌ Telegram: ошибка');
-    }
-  })
-  .catch(error => {
-    console.log('❌ Telegram: ошибка', error);
-  });
+})
+.then(response => {
+  if (response.ok) {
+    console.log('✅ Telegram: отправлено');
+  } else {
+    console.log('❌ Telegram: ошибка', response.status);
+  }
+})
+.catch(error => {
+  console.log('❌ Telegram: ошибка', error);
+});
   
   // ============================================
   // === УСПЕХ ===
