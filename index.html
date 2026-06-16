@@ -1043,6 +1043,33 @@ body {
   font-size: 0.8rem;
   margin-top: 4px;
 }
+  /* Кастомный чекбокс (рабочий) */
+.custom-checkbox {
+  min-width: 20px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #aaa;
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  background: #fff;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#consentCheckbox:checked + .custom-checkbox {
+  background: #3a7d23;
+  border-color: #3a7d23;
+}
+
+#consentCheckbox:checked + .custom-checkbox::after {
+  content: "✓";
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+}
 </style>
 </head>
 <body>
