@@ -1737,7 +1737,7 @@ document.getElementById('heroForm').addEventListener('submit', function(e) {
   }
   
 // ============================================
-// ОТПРАВКА НА EMAIL (Simpoll)
+// ОТПРАВКА на почту ЧЕРЕЗ SIMPOLL API
 // ============================================
 const formData = new FormData(this);
 const data = {
@@ -1758,7 +1758,16 @@ fetch('https://simpoll.ru/api/v1/forms/b5af121a/response', {
   if (response.ok) {
     console.log('✅ Заявка отправлена в Simpoll');
     openModal('successModal');
-    // ... остальной код очистки
+    // Очистка формы
+    this.reset();
+    const submitBtn = document.querySelector('.btn-cta');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = '0.5';
+      submitBtn.style.cursor = 'not-allowed';
+    }
+    checkbox.checked = false;
+    if (consentError) consentError.style.display = 'none';
   } else {
     console.error('❌ Ошибка отправки', response.status);
     alert('❌ Ошибка отправки. Попробуйте позже.');
