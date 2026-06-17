@@ -1140,7 +1140,7 @@ body {
       <form id="heroForm" novalidate autocomplete="off">
         <div class="form-group">
           <label>Марка комплекса</label>
-          <select required>
+          <select name="Марка комплекса" required>
             <option value="">Выберите марку</option>
             <option>Агратор</option>
             <option>CLAAS</option>
@@ -1156,17 +1156,17 @@ body {
         </div>
         <div class="form-group">
           <label>Количество семяпроводов</label>
-          <input type="text" placeholder="0" required>
+          <input type="text" name="Количество семяпроводов" placeholder="0" required>
           <div class="form-error">Укажите количество семяпроводов</div>
            </div>
         <div class="form-group">
           <label>Имя</label>
-          <input type="text" placeholder="Имя" required>
+          <input type="text" name="Имя" placeholder="Имя" required>
           <div class="form-error">Укажите Ваше Имя</div>
         </div>
         <div class="form-group">
           <label>Телефон</label>
-          <input type="tel" placeholder="+7 (___) ___-__-__" required id="heroPhone">
+          <input type="tel" name="Телефон" placeholder="+7 (___) ___-__-__" required id="heroPhone">
           <div class="form-error">Введите корректный номер</div>
         </div>
         
@@ -1617,12 +1617,15 @@ body {
     </div>
   </div>
 </div>
+  
 <!-- ========================================== -->
 <!-- === МОДАЛЬНОЕ ОКНО: ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ === -->
 <!-- ========================================== -->
-<div id="privacyModal" class="modal" onclick="closeModal('privacyModal')">
+<div id="privacyModal" class="modal">
   <div class="modal-content" style="max-width: 800px;">
-    <span class="modal-close" onclick="closeModal('privacyModal')">&times;</span>
+    <!-- КРЕСТИК ЗАКРЫТИЯ -->
+    <span class="modal-close" onclick="closePrivacyModal()">&times;</span>
+    
     <h2>Политика конфиденциальности</h2>
     <div class="modal-body">
       <p><strong>1. Общие положения</strong></p>
@@ -2005,6 +2008,44 @@ if (checkbox && submitBtn && form) {
     }
   });
 }
+  // === ФУНКЦИИ ДЛЯ ПОЛИТИКИ КОНФИДЕНЦИАЛЬНОСТИ ===
+function openPrivacyModal() {
+  const modal = document.getElementById('privacyModal');
+  if (modal) {
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closePrivacyModal() {
+  const modal = document.getElementById('privacyModal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+// === ОТКРЫТИЕ ПО КЛИКУ НА ССЫЛКУ ===
+document.addEventListener('DOMContentLoaded', function() {
+  const privacyLink = document.getElementById('privacyLink');
+  if (privacyLink) {
+    privacyLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      openPrivacyModal();
+    });
+  }
+  
+  // === ЗАКРЫТИЕ ПО КЛИКУ НА ФОН ===
+  const modal = document.getElementById('privacyModal');
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closePrivacyModal();
+      }
+    });
+  }
+});
+  
 </script>
   
 </body>
