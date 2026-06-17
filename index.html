@@ -1736,28 +1736,36 @@ document.getElementById('heroForm').addEventListener('submit', function(e) {
     return;
   }
   
-  // ============================================
-// ОТПРАВКА НА EMAIL (FormSubmit) - AJAX
+// ============================================
+// ОТПРАВКА НА EMAIL (Simpoll)
 // ============================================
 const formData = new FormData(this);
-// Добавляем отключение капчи
-formData.append('_captcha', 'false');
+const data = {
+  'Марка комплекса': formData.get('Марка комплекса'),
+  'Количество семяпроводов': formData.get('Количество семяпроводов'),
+  'Имя': formData.get('Имя'),
+  'Телефон': formData.get('Телефон')
+};
 
-fetch('https://formsubmit.co/ajax/alfa-alianse@mail.ru', {
+fetch('https://simpoll.ru/api/v1/forms/b5af121a/response', {
   method: 'POST',
-  body: formData
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(data)
 })
 .then(response => {
   if (response.ok) {
-    console.log('✅ Email: отправлено');
+    console.log('✅ Заявка отправлена в Simpoll');
+    openModal('successModal');
+    // ... остальной код очистки
   } else {
-    console.log('❌ Email: ошибка');
-    // Показываем ошибку пользователю
+    console.error('❌ Ошибка отправки', response.status);
     alert('❌ Ошибка отправки. Попробуйте позже.');
   }
 })
 .catch(error => {
-  console.log('❌ Email: ошибка', error);
+  console.error('❌ Ошибка', error);
   alert('❌ Ошибка отправки. Попробуйте позже.');
 });
   
