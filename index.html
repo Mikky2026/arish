@@ -1805,7 +1805,7 @@ allFields.forEach(f => {
 message += `\n<b>Согласие на обработку:</b> ${checkbox.checked ? '✅ Да' : '❌ Нет'}`;
 
 // Отправляем
-fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+fetch(`https://tg-bot-proxy.lmholding.workers.dev/bot${token}/sendMessage`, {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
