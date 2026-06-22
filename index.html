@@ -1736,7 +1736,7 @@ phoneMask(heroPhone);
 phoneMask(footerPhone);
 
   console.log('INIT CONSENT + BUTTON');
-  // === CONSENT + BUTTON STATE ===
+// === CONSENT + BUTTON STATE ===
 const consentCheckbox = document.getElementById('consentCheckbox');
 const consentError = document.getElementById('consentError');
 const submitBtn = document.getElementById('submitBtn');
@@ -1761,23 +1761,26 @@ if (submitBtn && consentCheckbox) {
   });
 }
 
-  console.log('HERO FORM HANDLER ATTACHED');
+console.log('HERO FORM HANDLER ATTACHED');
+
 // === HERO FORM ===
 document.getElementById('heroForm').addEventListener('submit', function(e) {
   e.preventDefault();
-  
-  // Проверяем чекбокс
-  const checkbox = document.getElementById('consentCheckbox');
-  const consentError = document.getElementById('consentError');
-  
-  if (!checkbox.checked) {
+
+  // Используем уже объявленные consentCheckbox / consentError, без нового const
+  if (!consentCheckbox || !consentCheckbox.checked) {
     if (consentError) {
       consentError.style.display = 'block';
     }
-    checkbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (consentCheckbox) {
+      consentCheckbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
     return;
   }
 
+});
+
+  
 /*
 // ============================================
 // ОТПРАВКА на почту ЧЕРЕЗ SIMPOLL API
