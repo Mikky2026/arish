@@ -1699,9 +1699,14 @@ document.addEventListener('click', (e) => {
 
 // === PHONE MASK ===
 function phoneMask(input) {
-  input.addEventListener('input', function(e) {
+  if (!input) return;
+
+  input.addEventListener('input', function () {
     let val = this.value.replace(/\D/g, '');
-    if (val.length === 0) { this.value = ''; return; }
+    if (val.length === 0) { 
+      this.value = ''; 
+      return; 
+    }
     if (val[0] === '7' || val[0] === '8') val = val.slice(1);
     let result = '+7 ';
     if (val.length > 0) result += '(' + val.slice(0, 3);
@@ -1714,19 +1719,45 @@ function phoneMask(input) {
     this.selectionStart = this.selectionEnd = this.value.length;
   });
 
-  input.addEventListener('focus', function() {
+  input.addEventListener('focus', function () {
     if (!this.value) this.value = '+7 ';
-    // курсор в конец и при фокусе
+    // курсор в конец при фокусе
     this.selectionStart = this.selectionEnd = this.value.length;
   });
 }
 
-// применяем к обоим полям
+// навешиваем на оба поля
 const heroPhone = document.getElementById('heroPhone');
 const footerPhone = document.getElementById('footerPhone');
 
-if (heroPhone) phoneMask(heroPhone);
-if (footerPhone) phoneMask(footerPhone);
+phoneMask(heroPhone);
+phoneMask(footerPhone);
+
+  // === CONSENT + BUTTON STATE ===
+const consentCheckbox = document.getElementById('consentCheckbox');
+const consentError = document.getElementById('consentError');
+const submitBtn = document.getElementById('submitBtn');
+
+// стартовое состояние — кнопка неактивна
+if (submitBtn && consentCheckbox) {
+  submitBtn.disabled = true;
+  submitBtn.style.opacity = '0.5';
+  submitBtn.style.cursor = 'not-allowed';
+
+  consentCheckbox.addEventListener('change', function () {
+    if (this.checked) {
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = '1';
+      submitBtn.style.cursor = 'pointer';
+      if (consentError) consentError.style.display = 'none';
+    } else {
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = '0.5';
+      submitBtn.style.cursor = 'not-allowed';
+    }
+  });
+}
+  
 // === HERO FORM ===
 document.getElementById('heroForm').addEventListener('submit', function(e) {
   e.preventDefault();
@@ -1743,7 +1774,7 @@ document.getElementById('heroForm').addEventListener('submit', function(e) {
     return;
   }
 
-
+/*
 // ============================================
 // ОТПРАВКА на почту ЧЕРЕЗ SIMPOLL API
 // ============================================
@@ -1785,7 +1816,7 @@ fetch('https://simpoll.ru/api/v1/forms/b5af121a/response', {
   console.error('❌ Ошибка', error);
   alert('❌ Ошибка отправки. Попробуйте позже.');
 });
-
+*/
   
 // ============================================
 // ОТПРАВКА В TELEGRAM (улучшенная)
