@@ -1781,7 +1781,7 @@ fetch('https://simpoll.ru/api/v1/forms/b5af121a/response', {
  // ============================================
 // ОТПРАВКА В TELEGRAM (улучшенная)
 // ============================================
-const token = '8740269183:AAFjJVx47m7a4XyTQ3tulsUEyUo5_2IBy5A';
+const token = '8740269183:AAGyrEZ-MdzhG_Y5fBgZK2z4urLzmnGBWGc';
 const chatId = '582065320'; // ← ЗАМЕНИТЕ
 
 let message = '📋 <b>Новая заявка с сайта!</b>\n\n';
@@ -1804,7 +1804,7 @@ allFields.forEach(f => {
 message += `\n<b>Согласие на обработку:</b> ${checkbox.checked ? '✅ Да' : '❌ Нет'}`;
 
 // Отправляем
-fetch(`https://tg-bot-proxy.lmholding.workers.dev/bot${token}/sendMessage`, {
+fetch(`https://tg-bot-worker.lmholding.workers.dev/bot${TOKEN}/sendMessage`, {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
