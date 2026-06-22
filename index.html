@@ -1709,17 +1709,24 @@ function phoneMask(input) {
     if (val.length >= 6) result += '-' + val.slice(6, 8);
     if (val.length >= 8) result += '-' + val.slice(8, 10);
     this.value = result;
+
+    // курсор всегда в конец
+    this.selectionStart = this.selectionEnd = this.value.length;
   });
+
   input.addEventListener('focus', function() {
     if (!this.value) this.value = '+7 ';
+    // курсор в конец и при фокусе
+    this.selectionStart = this.selectionEnd = this.value.length;
   });
 }
 
+// применяем к обоим полям
 const heroPhone = document.getElementById('heroPhone');
 const footerPhone = document.getElementById('footerPhone');
-phoneMask(heroPhone);
-phoneMask(footerPhone);
 
+if (heroPhone) phoneMask(heroPhone);
+if (footerPhone) phoneMask(footerPhone);
 // === HERO FORM ===
 document.getElementById('heroForm').addEventListener('submit', function(e) {
   e.preventDefault();
