@@ -1670,6 +1670,7 @@ body {
 </div>
   
 <script>
+  console.log('SCRIPT LOADED');
 // === HEADER SCROLL ===
 const header = document.getElementById('header');
 window.addEventListener('scroll', () => {
@@ -1697,6 +1698,7 @@ document.addEventListener('click', (e) => {
   }
 });
 
+  console.log('INIT PHONE MASK');
 // === PHONE MASK ===
 function phoneMask(input) {
   if (!input) return;
@@ -1733,6 +1735,7 @@ const footerPhone = document.getElementById('footerPhone');
 phoneMask(heroPhone);
 phoneMask(footerPhone);
 
+  console.log('INIT CONSENT + BUTTON');
   // === CONSENT + BUTTON STATE ===
 const consentCheckbox = document.getElementById('consentCheckbox');
 const consentError = document.getElementById('consentError');
@@ -1757,7 +1760,8 @@ if (submitBtn && consentCheckbox) {
     }
   });
 }
-  
+
+  console.log('HERO FORM HANDLER ATTACHED');
 // === HERO FORM ===
 document.getElementById('heroForm').addEventListener('submit', function(e) {
   e.preventDefault();
