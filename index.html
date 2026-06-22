@@ -1735,7 +1735,8 @@ document.getElementById('heroForm').addEventListener('submit', function(e) {
     checkbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
-  
+
+/*
 // ============================================
 // ОТПРАВКА на почту ЧЕРЕЗ SIMPOLL API
 // ============================================
@@ -1777,52 +1778,54 @@ fetch('https://simpoll.ru/api/v1/forms/b5af121a/response', {
   console.error('❌ Ошибка', error);
   alert('❌ Ошибка отправки. Попробуйте позже.');
 });
+*/
   
- // ============================================
+// ============================================
 // ОТПРАВКА В TELEGRAM (улучшенная)
 // ============================================
-const token = '8740269183:AAGyrEZ-MdzhG_Y5fBgZK2z4urLzmnGBWGc';
-const chatId = '582065320'; // ← ЗАМЕНИТЕ
+const TOKEN = '8740269183:AAGyrEZ-MdzhG_Y5fBgZK2z4urLzmnGBWGc';   // <-- сюда аккуратно вставь новый токен
+const CHAT_ID = 582065320;              // число, а не строка
 
+// ВНУТРИ обработчика submit (this = form)
 let message = '📋 <b>Новая заявка с сайта!</b>\n\n';
 
-// Собираем данные из полей
+// Собираем данные из полей формы
 const allFields = this.querySelectorAll('input, select, textarea');
 allFields.forEach(f => {
-  // Пропускаем чекбокс (он будет отдельно) и кнопку
   if (f.type === 'checkbox' || f.type === 'submit') return;
-  
-  // Берём name, если нет — placeholder, если нет — "Поле"
+
   const label = f.name || f.placeholder || 'Поле';
   const value = f.value || '—';
-  
-  // Форматируем красиво
+
   message += `<b>${label}:</b> ${value}\n`;
 });
 
-// Добавляем согласие
-message += `\n<b>Согласие на обработку:</b> ${checkbox.checked ? '✅ Да' : '❌ Нет'}`;
+// checkbox должен быть получен из формы, например:
+const checkbox = this.querySelector('input[type="checkbox"][name="agree"]');
+message += `\n<b>Согласие на обработку:</b> ${checkbox && checkbox.checked ? '✅ Да' : '❌ Нет'}`;
 
-// Отправляем
+// Отправляем в Telegram через Cloudflare Worker
 fetch(`https://tg-bot-worker.lmholding.workers.dev/bot${TOKEN}/sendMessage`, {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    chat_id: chatId,
+    chat_id: CHAT_ID,
     text: message,
     parse_mode: 'HTML'
   })
 })
-.then(response => {
-  if (response.ok) {
-    console.log('✅ Telegram: отправлено');
-  } else {
-    console.log('❌ Telegram: ошибка', response.status);
-  }
-})
-.catch(error => {
-  console.log('❌ Telegram: ошибка', error);
-});
+  .then(response => response.json())
+  .then(data => {
+    if (data.ok) {
+      console.log('✅ Telegram: отправлено', data);
+      // тут можно показать alert/сообщение "заявка отправлена"
+    } else {
+      console.log('❌ Telegram: ошибка от API', data);
+    }
+  })
+  .catch(error => {
+    console.log('❌ Telegram: ошибка сети/воркера', error);
+  });
   
   // ============================================
   // === УСПЕХ ===
