@@ -1670,7 +1670,6 @@ body {
 </div>
   
 <script>
-  console.log('SCRIPT LOADED');
 // === HEADER SCROLL ===
 const header = document.getElementById('header');
 window.addEventListener('scroll', () => {
@@ -1698,17 +1697,11 @@ document.addEventListener('click', (e) => {
   }
 });
 
-  console.log('INIT PHONE MASK');
 // === PHONE MASK ===
 function phoneMask(input) {
-  if (!input) return;
-
-  input.addEventListener('input', function () {
+  input.addEventListener('input', function(e) {
     let val = this.value.replace(/\D/g, '');
-    if (val.length === 0) { 
-      this.value = ''; 
-      return; 
-    }
+    if (val.length === 0) { this.value = ''; return; }
     if (val[0] === '7' || val[0] === '8') val = val.slice(1);
     let result = '+7 ';
     if (val.length > 0) result += '(' + val.slice(0, 3);
@@ -1716,72 +1709,33 @@ function phoneMask(input) {
     if (val.length >= 6) result += '-' + val.slice(6, 8);
     if (val.length >= 8) result += '-' + val.slice(8, 10);
     this.value = result;
-
-    // курсор всегда в конец
-    this.selectionStart = this.selectionEnd = this.value.length;
   });
-
-  input.addEventListener('focus', function () {
+  input.addEventListener('focus', function() {
     if (!this.value) this.value = '+7 ';
-    // курсор в конец при фокусе
-    this.selectionStart = this.selectionEnd = this.value.length;
   });
 }
 
-// навешиваем на оба поля
 const heroPhone = document.getElementById('heroPhone');
 const footerPhone = document.getElementById('footerPhone');
-
 phoneMask(heroPhone);
 phoneMask(footerPhone);
-
-  console.log('INIT CONSENT + BUTTON');
-// === CONSENT + BUTTON STATE ===
-const consentCheckbox = document.getElementById('consentCheckbox');
-const consentError = document.getElementById('consentError');
-const submitBtn = document.getElementById('submitBtn');
-
-// стартовое состояние — кнопка неактивна
-if (submitBtn && consentCheckbox) {
-  submitBtn.disabled = true;
-  submitBtn.style.opacity = '0.5';
-  submitBtn.style.cursor = 'not-allowed';
-
-  consentCheckbox.addEventListener('change', function () {
-    if (this.checked) {
-      submitBtn.disabled = false;
-      submitBtn.style.opacity = '1';
-      submitBtn.style.cursor = 'pointer';
-      if (consentError) consentError.style.display = 'none';
-    } else {
-      submitBtn.disabled = true;
-      submitBtn.style.opacity = '0.5';
-      submitBtn.style.cursor = 'not-allowed';
-    }
-  });
-}
-
-console.log('HERO FORM HANDLER ATTACHED');
 
 // === HERO FORM ===
 document.getElementById('heroForm').addEventListener('submit', function(e) {
   e.preventDefault();
-
-  // Используем уже объявленные consentCheckbox / consentError, без нового const
-  if (!consentCheckbox || !consentCheckbox.checked) {
+  
+  // Проверяем чекбокс
+  const checkbox = document.getElementById('consentCheckbox');
+  const consentError = document.getElementById('consentError');
+  
+  if (!checkbox.checked) {
     if (consentError) {
       consentError.style.display = 'block';
     }
-    if (consentCheckbox) {
-      consentCheckbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    checkbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
-
-});
-
   
-/*
 // ============================================
 // ОТПРАВКА на почту ЧЕРЕЗ SIMPOLL API
 // ============================================
@@ -1823,54 +1777,54 @@ fetch('https://simpoll.ru/api/v1/forms/b5af121a/response', {
   console.error('❌ Ошибка', error);
   alert('❌ Ошибка отправки. Попробуйте позже.');
 });
-*/
   
-// ============================================
+ // ============================================
 // ОТПРАВКА В TELEGRAM (улучшенная)
 // ============================================
-const TOKEN = '8740269183:AAGyrEZ-MdzhG_Y5fBgZK2z4urLzmnGBWGc';   // <-- сюда аккуратно вставь новый токен
-const CHAT_ID = 582065320;              // число, а не строка
+  /*
+const token = '8740269183:AAFjJVx47m7a4XyTQ3tulsUEyUo5_2IBy5A';
+const chatId = '582065320'; // ← ЗАМЕНИТЕ
 
-// ВНУТРИ обработчика submit (this = form)
 let message = '📋 <b>Новая заявка с сайта!</b>\n\n';
 
-// Собираем данные из полей формы
+// Собираем данные из полей
 const allFields = this.querySelectorAll('input, select, textarea');
 allFields.forEach(f => {
+  // Пропускаем чекбокс (он будет отдельно) и кнопку
   if (f.type === 'checkbox' || f.type === 'submit') return;
-
+  
+  // Берём name, если нет — placeholder, если нет — "Поле"
   const label = f.name || f.placeholder || 'Поле';
   const value = f.value || '—';
-
+  
+  // Форматируем красиво
   message += `<b>${label}:</b> ${value}\n`;
 });
 
-// checkbox должен быть получен из формы, например:
-const checkbox = this.querySelector('input[type="checkbox"][name="agree"]');
-message += `\n<b>Согласие на обработку:</b> ${checkbox && checkbox.checked ? '✅ Да' : '❌ Нет'}`;
+// Добавляем согласие
+message += `\n<b>Согласие на обработку:</b> ${checkbox.checked ? '✅ Да' : '❌ Нет'}`;
 
-// Отправляем в Telegram через Cloudflare Worker
-fetch(`https://tg-bot-worker.lmholding.workers.dev/bot${TOKEN}/sendMessage`, {
+// Отправляем
+fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    chat_id: CHAT_ID,
+    chat_id: chatId,
     text: message,
     parse_mode: 'HTML'
   })
 })
-  .then(response => response.json())
-  .then(data => {
-    if (data.ok) {
-      console.log('✅ Telegram: отправлено', data);
-      // тут можно показать alert/сообщение "заявка отправлена"
-    } else {
-      console.log('❌ Telegram: ошибка от API', data);
-    }
-  })
-  .catch(error => {
-    console.log('❌ Telegram: ошибка сети/воркера', error);
-  });
+.then(response => {
+  if (response.ok) {
+    console.log('✅ Telegram: отправлено');
+  } else {
+    console.log('❌ Telegram: ошибка', response.status);
+  }
+})
+.catch(error => {
+  console.log('❌ Telegram: ошибка', error);
+});
+*/
   
   // ============================================
   // === УСПЕХ ===
