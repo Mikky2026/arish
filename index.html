@@ -1795,23 +1795,40 @@ fetch('https://api.formtomail.ru/send', {
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
-    to: 'alfa-alianse@mail.ru',       // можно не указывать, если он задан в ключе
-    title: 'Новая заявка с сайта', // заголовок письма
-    body: mailBody,                // объект с полями формы
+    to: 'alfa-alianse@mail.ru',        // можно не указывать, если задан в ключе
+    title: 'Новая заявка с сайта',     // заголовок письма
+    body: mailBody,                    // объект с полями формы
     apiKey: 'HLOtzATBqjhKM8QA'         // твой API-ключ FormToMail
   })
 })
- .then(data => {
-  console.log('FormToMail raw response:', data);
-  console.log('statusCode:', data.statusCode, 'message:', data.message);
+  .then(response => {
+    console.log('FormToMail HTTP response:', response.status, response.ok);
 
-  if (data.statusCode === 200) {
+    // если HTTP-статус не 2xx — считаем это ошибкой
+    if (!response.ok) {
+      throw new Error('FormToMail HTTP error: ' + response.status);
+    }
+
+    // парсим JSON-ответ
+    return response.json();
+  })
+  .then(data => {
+    console.log('FormToMail JSON:', data);
+
+    // если у FormToMail есть свое поле статуса — проверяем его
+    if (data.statusCode && data.statusCode !== 200) {
+      console.error('❌ Ошибка FormToMail (JSON)', data);
+      alert('❌ Ошибка отправки письма. Попробуйте позже.');
+      return;
+    }
+
     console.log('✅ Письмо отправлено через FormToMail');
-  } else {
-    console.error('❌ Ошибка FormToMail', data);
+    // здесь можно показать пользователю "Заявка отправлена"
+  })
+  .catch(error => {
+    console.error('❌ Ошибка FormToMail (fetch)', error);
     alert('❌ Ошибка отправки письма. Попробуйте позже.');
-  }
-})
+  });
 
   
   // ============================================
