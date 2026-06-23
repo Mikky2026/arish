@@ -1775,49 +1775,46 @@ document.getElementById('heroForm').addEventListener('submit', function(e) {
     return;
   }
 
-  /*
+  
 // ============================================
-// ОТПРАВКА на почту ЧЕРЕЗ SIMPOLL API
+// ОТПРАВКА НА ПОЧТУ ЧЕРЕЗ FormToMail
 // ============================================
 const formData = new FormData(this);
-const data = {
+
+const mailBody = {
   'Марка комплекса': formData.get('Марка комплекса'),
   'Количество семяпроводов': formData.get('Количество семяпроводов'),
   'Имя': formData.get('Имя'),
   'Телефон': formData.get('Телефон')
 };
 
-fetch('https://simpoll.ru/api/v1/forms/b5af121a/response', {
+fetch('https://api.formtomail.ru/send', {
   method: 'POST',
+  mode: 'cors',
   headers: {
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json'
   },
-  body: JSON.stringify(data)
+  body: JSON.stringify({
+    to: 'alfa-alianse@mail.ru',       // можно не указывать, если он задан в ключе
+    title: 'Новая заявка с сайта', // заголовок письма
+    body: mailBody,                // объект с полями формы
+    apiKey: 'HLOtzATBqjhKM8QA'         // твой API-ключ FormToMail
+  })
 })
-.then(response => {
-  if (response.ok) {
-    console.log('✅ Заявка отправлена в Simpoll');
-    openModal('successModal');
-    // Очистка формы
-    this.reset();
-    const submitBtn = document.querySelector('.btn-cta');
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.style.opacity = '0.5';
-      submitBtn.style.cursor = 'not-allowed';
+  .then(response => response.json())
+  .then(data => {
+    if (data.ok) {
+      console.log('✅ Письмо отправлено через FormToMail');
+    } else {
+      console.error('❌ Ошибка FormToMail', data);
+      alert('❌ Ошибка отправки письма. Попробуйте позже.');
     }
-    checkbox.checked = false;
-    if (consentError) consentError.style.display = 'none';
-  } else {
-    console.error('❌ Ошибка отправки', response.status);
-    alert('❌ Ошибка отправки. Попробуйте позже.');
-  }
-})
-.catch(error => {
-  console.error('❌ Ошибка', error);
-  alert('❌ Ошибка отправки. Попробуйте позже.');
-});
-*/
+  })
+  .catch(error => {
+    console.error('❌ Ошибка сети при отправке письма', error);
+    alert('❌ Ошибка сети при отправке письма. Попробуйте позже.');
+  });
+
   
   // ============================================
   // ОТПРАВКА В TELEGRAM ЧЕРЕЗ CLOUDFLARE WORKER
