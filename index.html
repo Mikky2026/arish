@@ -1802,14 +1802,14 @@ fetch('https://api.formtomail.ru/send', {
   })
 })
  .then(data => {
-  console.log('FormToMail response:', JSON.stringify(data));
+  console.log('FormToMail raw response:', data);
+  console.log('statusCode:', data.statusCode, 'message:', data.message);
 
   if (data.statusCode === 200) {
     console.log('✅ Письмо отправлено через FormToMail');
   } else {
-    console.error('❌ Ошибка FormToMail', JSON.stringify(data));
-    // временно можно не показывать alert, чтобы не пугать пользователя
-    // alert('❌ Ошибка отправки письма. Попробуйте позже.');
+    console.error('❌ Ошибка FormToMail', data);
+    alert('❌ Ошибка отправки письма. Попробуйте позже.');
   }
 })
 
