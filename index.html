@@ -1720,6 +1720,9 @@ const footerPhone = document.getElementById('footerPhone');
 phoneMask(heroPhone);
 phoneMask(footerPhone);
 
+const TOKEN = '8740269183:AAGc7y39hvAEcZG3EOaKgNyl41_mvk3pIr4'; // тот, который даёт ok:true на getMe
+const CHAT_ID = 582065320;             // тот id, на который мы уже успешно слали
+  
 // === HERO FORM ===
 document.getElementById('heroForm').addEventListener('submit', function(e) {
   e.preventDefault();
@@ -1780,52 +1783,41 @@ fetch('https://simpoll.ru/api/v1/forms/b5af121a/response', {
 });
 */
   
- // ============================================
-// ОТПРАВКА В TELEGRAM (улучшенная)
-// ============================================
-  
-const token = '8740269183:AAFjJVx47m7a4XyTQ3tulsUEyUo5_2IBy5A';
-const chatId = '582065320'; // ← ЗАМЕНИТЕ
+  // ============================================
+  // ОТПРАВКА В TELEGRAM ЧЕРЕЗ CLOUDFLARE WORKER
+  // ============================================
+  let message = '📋 <b>Новая заявка с сайта!</b>\n\n';
 
-let message = '📋 <b>Новая заявка с сайта!</b>\n\n';
+  const allFields = this.querySelectorAll('input, select, textarea');
+  allFields.forEach(f => {
+    if (f.type === 'checkbox' || f.type === 'submit') return;
+    const label = f.name || f.placeholder || 'Поле';
+    const value = f.value || '—';
+    message += `<b>${label}:</b> ${value}\n`;
+  });
 
-// Собираем данные из полей
-const allFields = this.querySelectorAll('input, select, textarea');
-allFields.forEach(f => {
-  // Пропускаем чекбокс (он будет отдельно) и кнопку
-  if (f.type === 'checkbox' || f.type === 'submit') return;
-  
-  // Берём name, если нет — placeholder, если нет — "Поле"
-  const label = f.name || f.placeholder || 'Поле';
-  const value = f.value || '—';
-  
-  // Форматируем красиво
-  message += `<b>${label}:</b> ${value}\n`;
-});
+  // добавляем согласие из чекбокса
+  message += `\n<b>Согласие на обработку:</b> ${checkbox.checked ? '✅ Да' : '❌ Нет'}`;
 
-// Добавляем согласие
-message += `\n<b>Согласие на обработку:</b> ${checkbox.checked ? '✅ Да' : '❌ Нет'}`;
-
-// Отправляем
-fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    chat_id: chatId,
-    text: message,
-    parse_mode: 'HTML'
+  fetch(`https://tg-bot-worker.lmholding.workers.dev/bot${TOKEN}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: CHAT_ID,
+      text: message,
+      parse_mode: 'HTML'
+    })
   })
-})
-.then(response => {
-  if (response.ok) {
-    console.log('✅ Telegram: отправлено');
-  } else {
-    console.log('❌ Telegram: ошибка', response.status);
-  }
-})
-.catch(error => {
-  console.log('❌ Telegram: ошибка', error);
-});
+    .then(r => r.json())
+    .then(data => {
+      console.log('Telegram response:', data);
+      if (!data.ok) {
+        console.warn('Ошибка Telegram:', data.description);
+      }
+    })
+    .catch(err => {
+      console.error('Ошибка Telegram/воркера:', err);
+    });
 
   
   // ============================================
