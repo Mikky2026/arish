@@ -1724,8 +1724,44 @@ const TOKEN = '8740269183:AAGc7y39hvAEcZG3EOaKgNyl41_mvk3pIr4'; // тот, ко�
 const CHAT_ID = 582065320;             // тот id, на который мы уже успешно слали
   
 // === HERO FORM ===
+// === HERO FORM ===
 document.getElementById('heroForm').addEventListener('submit', function(e) {
   e.preventDefault();
+
+  let hasError = false;
+
+  // Проверяем все поля с required
+  const groups = this.querySelectorAll('.form-group');
+  groups.forEach(group => {
+    const field = group.querySelector('input, select, textarea');
+    const error = group.querySelector('.form-error');
+    if (!field || !error) return;
+
+    // очищаем старую ошибку
+    error.style.display = 'none';
+
+    // телефон — отдельное правило
+    if (field.name === 'Телефон') {
+      const digits = field.value.replace(/\D/g, '');
+      if (digits.length < 11) {
+        error.textContent = 'Введите корректный номер';
+        error.style.display = 'block';
+        hasError = true;
+      }
+      return;
+    }
+
+    // для остальных — просто required
+    if (field.hasAttribute('required') && !field.value.trim()) {
+      error.style.display = 'block';
+      hasError = true;
+    }
+  });
+
+  if (hasError) {
+    // если есть ошибки — ничего не отправляем
+    return;
+  }
   
   // Проверяем чекбокс
   const checkbox = document.getElementById('consentCheckbox');
