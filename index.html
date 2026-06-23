@@ -1801,19 +1801,17 @@ fetch('https://api.formtomail.ru/send', {
     apiKey: 'HLOtzATBqjhKM8QA'         // твой API-ключ FormToMail
   })
 })
-  .then(response => response.json())
-  .then(data => {
-    if (data.ok) {
-      console.log('✅ Письмо отправлено через FormToMail');
-    } else {
-      console.error('❌ Ошибка FormToMail', data);
-      alert('❌ Ошибка отправки письма. Попробуйте позже.');
-    }
-  })
-  .catch(error => {
-    console.error('❌ Ошибка сети при отправке письма', error);
-    alert('❌ Ошибка сети при отправке письма. Попробуйте позже.');
-  });
+ .then(data => {
+  console.log('FormToMail response:', JSON.stringify(data));
+
+  if (data.statusCode === 200) {
+    console.log('✅ Письмо отправлено через FormToMail');
+  } else {
+    console.error('❌ Ошибка FormToMail', JSON.stringify(data));
+    // временно можно не показывать alert, чтобы не пугать пользователя
+    // alert('❌ Ошибка отправки письма. Попробуйте позже.');
+  }
+})
 
   
   // ============================================
