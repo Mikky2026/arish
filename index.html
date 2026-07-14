@@ -1720,9 +1720,6 @@ const footerPhone = document.getElementById('footerPhone');
 phoneMask(heroPhone);
 phoneMask(footerPhone);
 
-const TOKEN = 'здесь будет токен'; // тот, который даёт ok:true на getMe
-const CHAT_ID = 582065320;             // тот id, на который мы уже успешно слали
-  
 // === HERO FORM ===
 // === HERO FORM ===
 document.getElementById('heroForm').addEventListener('submit', function(e) {
@@ -1833,39 +1830,46 @@ fetch('https://api.formtomail.ru/send', {
   
   // ============================================
   // ОТПРАВКА В TELEGRAM ЧЕРЕЗ CLOUDFLARE WORKER
-  // ============================================
-  let message = '📋 <b>Новая заявка с сайта!</b>\n\n';
+// ============================================
+let message = '📋 <b>Новая заявка с сайта!</b>\n\n';
 
-  const allFields = this.querySelectorAll('input, select, textarea');
-  allFields.forEach(f => {
-    if (f.type === 'checkbox' || f.type === 'submit') return;
-    const label = f.name || f.placeholder || 'Поле';
-    const value = f.value || '—';
-    message += `<b>${label}:</b> ${value}\n`;
-  });
+const allFields = this.querySelectorAll('input, select, textarea');
+allFields.forEach(f => {
+  if (f.type === 'checkbox' || f.type === 'submit') return;
+  const label = f.name || f.placeholder || 'Поле';
+  const value = f.value || '—';
+  message += `<b>${label}:</b> ${value}\n`;
+});
 
-  // добавляем согласие из чекбокса
-  message += `\n<b>Согласие на обработку:</b> ${checkbox.checked ? '✅ Да' : '❌ Нет'}`;
+// добавляем согласие из чекбокса
+message += `\n<b>Согласие на обработку:</b> ${checkbox.checked ? '✅ Да' : '❌ Нет'}`;
 
-  fetch(`https://tg-bot-worker.lmholding.workers.dev/bot${TOKEN}/sendMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      chat_id: CHAT_ID,
-      text: message,
-      parse_mode: 'HTML'
-    })
+fetch('https://tg-bot-worker.lmholding.workers.dev/send', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    message // только текст, без токена и chat_id
   })
-    .then(r => r.json())
-    .then(data => {
-      console.log('Telegram response:', data);
-      if (!data.ok) {
-        console.warn('Ошибка Telegram:', data.description);
-      }
-    })
-    .catch(err => {
-      console.error('Ошибка Telegram/воркера:', err);
-    });
+})
+  .then(r => {
+    if (!r.ok) {
+      throw new Error('Worker HTTP error: ' + r.status);
+    }
+    return r.json();
+  })
+  .then(data => {
+    console.log('Telegram worker response:', data);
+    if (data.ok) {
+      openModal('successModal');
+      this.reset();
+    } else {
+      console.warn('Ошибка Telegram:', data.error || data);
+    }
+  })
+  .catch(err => {
+    console.error('Ошибка Telegram/воркера:', err);
+    // при желании можно показать alert
+  });
 
   
   // ============================================
